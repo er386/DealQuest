@@ -1,0 +1,28 @@
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(15,15,19,0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: navSlideDown 0.4s ease both;
+}
+@keyframes navSlideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+.logo { font-size: 20px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; text-decoration: none; }
+.logo span { color: var(--text); }
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: 7px; transition: color 0.15s, background 0.15s; }
+.nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--surface2); }
+@media (max-width: 600px) {
+  nav { padding: 0 20px; }
+  .nav-links a:not(.btn-primary):not(.btn-ghost) { display: none; }
+}

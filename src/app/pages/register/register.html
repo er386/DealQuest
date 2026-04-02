@@ -1,0 +1,82 @@
+<app-navbar />
+
+<div class="page">
+  <div class="card">
+    <div class="card-logo"><span class="card-logo-text">Deal<span>Quest</span></span></div>
+    <h1>Create an Account</h1>
+    <p class="card-sub">Already have an account? <a routerLink="/login">Sign in</a></p>
+
+    <div class="field">
+      <div class="field-label"><label for="username">Username</label></div>
+      <div class="input-wrap">
+        <input type="text" id="username" placeholder="coolgamer123" maxlength="32"
+          [(ngModel)]="username" [class.error]="errors['username']" (input)="errors['username']=false"/>
+      </div>
+      @if (errors['username']) { <div class="field-error show">Username must be 3-32 characters.</div> }
+    </div>
+
+    <div class="field">
+      <div class="field-label"><label for="email">Email Address</label></div>
+      <div class="input-wrap">
+        <input type="email" id="email" placeholder="you@example.com"
+          [(ngModel)]="email" [class.error]="errors['email']" (input)="errors['email']=false"/>
+      </div>
+      @if (errors['email']) { <div class="field-error show">Please enter a valid email address.</div> }
+    </div>
+
+    <div class="field">
+      <div class="field-label"><label for="password">Password</label></div>
+      <div class="input-wrap">
+        <input [type]="showPassword ? 'text' : 'password'" id="password" placeholder="••••••••"
+          [(ngModel)]="password" [class.error]="errors['password']"
+          (input)="errors['password']=false; checkStrength()"/>
+        <button class="toggle-pw" type="button" (click)="togglePw('password')" aria-label="Show password">
+          @if (!showPassword) {
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          } @else {
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          }
+        </button>
+      </div>
+      <div class="pw-strength">
+        <div class="pw-strength-bars">
+          @for (i of [0,1,2,3]; track i) {
+            <div class="pw-bar" [class]="getBarClass(i)"></div>
+          }
+        </div>
+        <span class="pw-strength-label">{{ pwLabel }}</span>
+      </div>
+      @if (errors['password']) { <div class="field-error show">Password must be at least 8 characters.</div> }
+    </div>
+
+    <div class="field">
+      <div class="field-label"><label for="confirm">Confirm Password</label></div>
+      <div class="input-wrap">
+        <input [type]="showConfirm ? 'text' : 'password'" id="confirm" placeholder="••••••••"
+          [(ngModel)]="confirm" [class.error]="errors['confirm']" (input)="errors['confirm']=false"/>
+        <button class="toggle-pw" type="button" (click)="togglePw('confirm')" aria-label="Show password">
+          @if (!showConfirm) {
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          } @else {
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          }
+        </button>
+      </div>
+      @if (errors['confirm']) { <div class="field-error show">Passwords do not match.</div> }
+    </div>
+
+    <div class="terms-row">
+      <input type="checkbox" id="terms" [(ngModel)]="terms" (change)="errors['terms']=false"/>
+      <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+    </div>
+    @if (errors['terms']) { <div class="field-error show" style="margin-top:-8px;margin-bottom:8px;">You must accept the terms to continue.</div> }
+
+    <button class="btn-submit" [disabled]="loading" (click)="handleRegister()">
+      {{ loading ? 'Creating account...' : 'Create Account' }}
+    </button>
+  </div>
+</div>
+
+<footer>
+  <a href="#">About</a><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a>
+</footer>

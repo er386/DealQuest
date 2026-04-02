@@ -1,0 +1,52 @@
+<app-navbar />
+
+<div class="page">
+  <div class="card">
+    <div class="card-logo">
+      <span class="card-logo-text">Deal<span>Quest</span></span>
+    </div>
+    <h1>Welcome Back</h1>
+    <p class="card-sub">Don't have an account? <a routerLink="/register">Sign up free</a></p>
+
+    <div class="field">
+      <div class="field-label"><label for="email">Email Address</label></div>
+      <div class="input-wrap">
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email"
+          [(ngModel)]="email" [class.error]="emailError" (input)="emailError=false"/>
+      </div>
+      @if (emailError) { <div class="field-error show">Please enter a valid email address.</div> }
+    </div>
+
+    <div class="field">
+      <div class="field-label">
+        <label for="password">Password</label>
+        <a href="#">Forgot password?</a>
+      </div>
+      <div class="input-wrap">
+        <input [type]="showPassword ? 'text' : 'password'" id="password" placeholder="••••••••"
+          [(ngModel)]="password" [class.error]="passwordError" (input)="passwordError=false"/>
+        <button class="toggle-pw" type="button" (click)="togglePw()" aria-label="Show password">
+          @if (!showPassword) {
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          } @else {
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          }
+        </button>
+      </div>
+      @if (passwordError) { <div class="field-error show">Password is required.</div> }
+    </div>
+
+    <button class="btn-submit" [disabled]="loading" (click)="handleLogin()">
+      {{ loading ? 'Signing in...' : 'Sign In' }}
+    </button>
+
+    <div class="or-divider"><hr><span>or continue with</span><hr></div>
+    <p style="font-size:12px;color:var(--faint);text-align:center;">
+      By signing in you agree to our <a href="#" style="color:var(--accent);text-decoration:none;">Terms</a> and <a href="#" style="color:var(--accent);text-decoration:none;">Privacy Policy</a>.
+    </p>
+  </div>
+</div>
+
+<footer>
+  <a href="#">About</a><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a>
+</footer>
