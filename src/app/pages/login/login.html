@@ -36,6 +36,7 @@
       @if (passwordError) { <div class="field-error show">Password is required.</div> }
     </div>
 
+    @if (serverError) { <div class="field-error show" style="margin-bottom:12px;">{{ serverError }}</div> }
     <button class="btn-submit" [disabled]="loading" (click)="handleLogin()">
       {{ loading ? 'Signing in...' : 'Sign In' }}
     </button>

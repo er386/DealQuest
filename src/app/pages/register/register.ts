@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Navbar } from '../../components/navbar/navbar';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -20,8 +21,11 @@ export class Register {
   loading = false;
 
   errors: Record<string, boolean> = {};
+  serverError = '';
   pwStrength = 0;
   pwLabel = 'Use 8+ characters with numbers and symbols';
+
+  constructor(private auth: AuthService, private router: Router) {}
 
   togglePw(field: 'password' | 'confirm') {
     if (field === 'password') this.showPassword = !this.showPassword;
@@ -39,7 +43,7 @@ export class Register {
     const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
     const hints = ['uppercase letters', 'numbers', 'symbols'];
     this.pwLabel = v.length === 0 ? 'Use 8+ characters with numbers and symbols'
-      : score < 4 ? labels[score] + ' — add ' + (hints[score - 1] || 'more variety')
+      : score < 4 ? labels[score] + ' -- add ' + (hints[score - 1] || 'more variety')
       : 'Strong password!';
   }
 
@@ -51,13 +55,21 @@ export class Register {
 
   handleRegister() {
     this.errors = {};
+    this.serverError = '';
     if (this.username.length < 3) this.errors['username'] = true;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email)) this.errors['email'] = true;
     if (this.password.length < 8) this.errors['password'] = true;
     if (this.confirm !== this.password) this.errors['confirm'] = true;
     if (!this.terms) this.errors['terms'] = true;
-    if (Object.keys(this.errors).length === 0) {
-      this.loading = true;
-    }
+    if (Object.keys(this.errors).length > 0) return;
+
+    this.loading = true;
+    this.auth.register(this.username, this.email, this.password).subscribe({
+      next: () => this.router.navigate(['/']),
+      error: (err) => {
+        this.loading = false;
+        this.serverError = err.error?.message || 'Something went wrong. Please try again.';
+      }
+    });
   }
 }

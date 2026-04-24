@@ -71,6 +71,7 @@
     </div>
     @if (errors['terms']) { <div class="field-error show" style="margin-top:-8px;margin-bottom:8px;">You must accept the terms to continue.</div> }
 
+    @if (serverError) { <div class="field-error show" style="margin-bottom:12px;">{{ serverError }}</div> }
     <button class="btn-submit" [disabled]="loading" (click)="handleRegister()">
       {{ loading ? 'Creating account...' : 'Create Account' }}
     </button>

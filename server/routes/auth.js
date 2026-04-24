@@ -1,13 +1,27 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
 const User = require('../models/User');
 
 const router = express.Router();
 
+const isString = (v) => typeof v === 'string';
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many login attempts, try again later' },
+});
+
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
+
+  if (!isString(username) || !isString(email) || !isString(password))
+    return res.status(400).json({ message: 'Invalid input' });
 
   if (!username || !email || !password)
     return res.status(400).json({ message: 'All fields are required' });
@@ -32,8 +46,11 @@ router.post('/register', async (req, res) => {
 });
 
 // POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
   const { email, password } = req.body;
+
+  if (!isString(email) || !isString(password))
+    return res.status(400).json({ message: 'Invalid input' });
 
   if (!email || !password)
     return res.status(400).json({ message: 'Email and password are required' });
