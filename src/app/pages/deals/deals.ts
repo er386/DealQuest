@@ -43,7 +43,10 @@ export class Deals implements OnInit {
           return this.cheapshark.getDeals(this.buildQuery());
         })
       )
-      .subscribe(this.resultHandler);
+      .subscribe({
+        next: (deals: Deal[]) => { this.deals = deals; this.loading = false; },
+        error: () => { this.error = 'Could not load deals. Try again.'; this.loading = false; }
+      });
 
     this.searchTerm = this.route.snapshot.queryParamMap.get('q') ?? '';
     this.fetchNow();
@@ -60,17 +63,6 @@ export class Deals implements OnInit {
   runSearch() { this.search$.next(); }
   runSearchNow() { this.fetchNow(); }
 
-  private fetchNow() {
-    this.loading = true;
-    this.error = '';
-    this.cheapshark.getDeals(this.buildQuery()).subscribe(this.resultHandler);
-  }
-
-  private resultHandler = {
-    next: (deals: Deal[]) => { this.deals = deals; this.loading = false; },
-    error: () => { this.error = 'Could not load deals. Try again.'; this.loading = false; }
-  };
-
   setFilter(f: PriceFilter) { this.activeFilter = f; this.fetchNow(); }
 
   storeName(id: string): string { return this.storeMap[id] || `Store ${id}`; }
@@ -81,8 +73,18 @@ export class Deals implements OnInit {
 
   toggleWishlist(event: Event) {
     event.stopPropagation();
+    event.preventDefault();
     const btn = (event.currentTarget as HTMLElement);
     btn.classList.toggle('saved');
+  }
+
+  private fetchNow() {
+    this.loading = true;
+    this.error = '';
+    this.cheapshark.getDeals(this.buildQuery()).subscribe({
+      next: (deals: Deal[]) => { this.deals = deals; this.loading = false; },
+      error: () => { this.error = 'Could not load deals. Try again.'; this.loading = false; }
+    });
   }
 
   private buildQuery(): DealQuery {
