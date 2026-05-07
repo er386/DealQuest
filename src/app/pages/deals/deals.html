@@ -5,15 +5,15 @@
   <div class="controls">
     <div class="search-wrap">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" placeholder="Search for a game..." [(ngModel)]="searchTerm" (ngModelChange)="runSearch()" (keyup.enter)="runSearch()"/>
-      <button (click)="runSearch()">Search</button>
+      <input type="text" placeholder="Search for a game..." [(ngModel)]="searchTerm" (ngModelChange)="runSearch()" (keyup.enter)="runSearchNow()"/>
+      <button (click)="runSearchNow()">Search</button>
     </div>
     <div class="filter-tabs">
       @for (f of filters; track f) {
         <button class="filter-tab" [class.active]="activeFilter === f" (click)="setFilter(f)">{{ f }}</button>
       }
     </div>
-    <select class="filter-select" [(ngModel)]="storeFilter" (ngModelChange)="runSearch()">
+    <select class="filter-select" [(ngModel)]="storeFilter" (ngModelChange)="runSearchNow()">
       <option value="">All Stores</option>
       <option value="1">Steam</option>
       <option value="25">Epic Games</option>
@@ -36,12 +36,12 @@
     </div>
     <div class="sidebar-section">
       <h3>Store</h3>
-      <div class="sidebar-item" [class.active]="storeFilter === ''" (click)="storeFilter=''; runSearch()">All Stores</div>
-      <div class="sidebar-item" [class.active]="storeFilter === '1'" (click)="storeFilter='1'; runSearch()">Steam</div>
-      <div class="sidebar-item" [class.active]="storeFilter === '25'" (click)="storeFilter='25'; runSearch()">Epic Games</div>
-      <div class="sidebar-item" [class.active]="storeFilter === '7'" (click)="storeFilter='7'; runSearch()">GOG</div>
-      <div class="sidebar-item" [class.active]="storeFilter === '11'" (click)="storeFilter='11'; runSearch()">Humble Store</div>
-      <div class="sidebar-item" [class.active]="storeFilter === '15'" (click)="storeFilter='15'; runSearch()">Fanatical</div>
+      <div class="sidebar-item" [class.active]="storeFilter === ''" (click)="storeFilter=''; runSearchNow()">All Stores</div>
+      <div class="sidebar-item" [class.active]="storeFilter === '1'" (click)="storeFilter='1'; runSearchNow()">Steam</div>
+      <div class="sidebar-item" [class.active]="storeFilter === '25'" (click)="storeFilter='25'; runSearchNow()">Epic Games</div>
+      <div class="sidebar-item" [class.active]="storeFilter === '7'" (click)="storeFilter='7'; runSearchNow()">GOG</div>
+      <div class="sidebar-item" [class.active]="storeFilter === '11'" (click)="storeFilter='11'; runSearchNow()">Humble Store</div>
+      <div class="sidebar-item" [class.active]="storeFilter === '15'" (click)="storeFilter='15'; runSearchNow()">Fanatical</div>
     </div>
   </aside>
 
@@ -52,7 +52,7 @@
         @else if (error) { {{ error }} }
         @else { Showing <strong>{{ deals.length }}</strong> deals }
       </span>
-      <select class="sort-select" [(ngModel)]="sortLabel" (ngModelChange)="runSearch()">
+      <select class="sort-select" [(ngModel)]="sortLabel" (ngModelChange)="runSearchNow()">
         <option>Best Deal</option>
         <option>Lowest Price</option>
         <option>Highest Discount</option>
