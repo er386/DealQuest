@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Subject, debounceTime, switchMap } from 'rxjs';
@@ -28,7 +29,7 @@ export class Deals implements OnInit {
 
   private search$ = new Subject<void>();
 
-  constructor(private cheapshark: CheapSharkService) {}
+  constructor(private cheapshark: CheapSharkService, private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.cheapshark.getStoreMap().subscribe(m => this.storeMap = m);
@@ -47,7 +48,13 @@ export class Deals implements OnInit {
         error: () => { this.error = 'Could not load deals. Try again.'; this.loading = false; }
       });
 
-    this.runSearch();
+    this.route.queryParamMap.subscribe(params => {
+      const q = params.get('q') ?? '';
+      if (q !== this.searchTerm) {
+        this.searchTerm = q;
+      }
+      this.runSearch();
+    });
   }
 
   runSearch() { this.search$.next(); }

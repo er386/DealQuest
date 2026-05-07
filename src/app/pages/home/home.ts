@@ -1,18 +1,35 @@
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, AfterViewInit, OnInit, ElementRef } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { Navbar } from '../../components/navbar/navbar';
+import { CheapSharkService, Deal } from '../../services/cheapshark.service';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, FormsModule, Navbar],
+  imports: [RouterLink, FormsModule, CommonModule, Navbar],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home implements AfterViewInit {
+export class Home implements OnInit, AfterViewInit {
   searchQuery = '';
+  featured: Deal[] = [];
+  topPicks: Deal[] = [];
+  storeMap: Record<string, string> = {};
 
-  constructor(private el: ElementRef) {}
+  constructor(
+    private el: ElementRef,
+    private cheapshark: CheapSharkService,
+    private router: Router,
+  ) {}
+
+  ngOnInit() {
+    this.cheapshark.getStoreMap().subscribe(m => this.storeMap = m);
+    this.cheapshark.getDeals({ sortBy: 'Deal Rating', desc: 1, pageSize: 4 })
+      .subscribe(d => this.featured = d);
+    this.cheapshark.getDeals({ sortBy: 'Savings', desc: 1, pageSize: 4, onSale: 1 })
+      .subscribe(d => this.topPicks = d);
+  }
 
   ngAfterViewInit() {
     const observer = new IntersectionObserver((entries) => {
@@ -56,5 +73,17 @@ export class Home implements AfterViewInit {
 
   fillSearch(tag: string) {
     this.searchQuery = tag;
+    this.submitSearch();
+  }
+
+  submitSearch() {
+    const q = this.searchQuery.trim();
+    this.router.navigate(['/deals'], { queryParams: q ? { q } : {} });
+  }
+
+  storeName(id: string): string { return this.storeMap[id] || `Store ${id}`; }
+
+  dealUrl(dealID: string): string {
+    return `https://www.cheapshark.com/redirect?dealID=${dealID}`;
   }
 }

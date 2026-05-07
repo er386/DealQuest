@@ -7,8 +7,8 @@
   <p class="hero-sub">Search across Steam, Epic, GOG, and more. Save games to your wishlist and get notified when prices drop.</p>
   <div class="search-wrap">
     <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" placeholder="Search for a game..." [(ngModel)]="searchQuery"/>
-    <button>Search</button>
+    <input type="text" placeholder="Search for a game..." [(ngModel)]="searchQuery" (keyup.enter)="submitSearch()"/>
+    <button (click)="submitSearch()">Search</button>
   </div>
   <div class="hero-tags">
     <span class="tag" (click)="fillSearch('Cyberpunk 2077')">Cyberpunk 2077</span>
@@ -31,26 +31,25 @@
 <div class="section fade-in">
   <div class="section-header"><h2>Featured Deals</h2><a routerLink="/deals">View all &rarr;</a></div>
   <div class="deals-grid">
-    <div class="deal-card fade-in">
-      <div class="wishlist-btn" title="Add to wishlist"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c6af7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-      <img class="deal-thumb" src="https://cdn.akamai.steamstatic.com/steam/apps/1091500/header.jpg" alt="Cyberpunk 2077">
-      <div class="deal-info"><div class="deal-title">Cyberpunk 2077</div><div class="deal-store">Steam</div><div class="deal-prices"><span class="deal-sale">$14.99</span><span class="deal-original">$59.99</span><span class="deal-badge">-75%</span></div></div>
-    </div>
-    <div class="deal-card fade-in">
-      <div class="wishlist-btn" title="Add to wishlist"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c6af7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-      <img class="deal-thumb" src="https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg" alt="Elden Ring">
-      <div class="deal-info"><div class="deal-title">Elden Ring</div><div class="deal-store">GOG</div><div class="deal-prices"><span class="deal-sale">$29.99</span><span class="deal-original">$59.99</span><span class="deal-badge">-50%</span></div></div>
-    </div>
-    <div class="deal-card fade-in">
-      <div class="wishlist-btn" title="Add to wishlist"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c6af7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-      <img class="deal-thumb" src="https://cdn.akamai.steamstatic.com/steam/apps/1174180/header.jpg" alt="Red Dead Redemption 2">
-      <div class="deal-info"><div class="deal-title">Red Dead Redemption 2</div><div class="deal-store">Epic Games</div><div class="deal-prices"><span class="deal-sale">$19.99</span><span class="deal-original">$59.99</span><span class="deal-badge">-67%</span></div></div>
-    </div>
-    <div class="deal-card fade-in">
-      <div class="wishlist-btn" title="Add to wishlist"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c6af7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-      <img class="deal-thumb" src="https://cdn.akamai.steamstatic.com/steam/apps/292030/header.jpg" alt="The Witcher 3">
-      <div class="deal-info"><div class="deal-title">The Witcher 3: Wild Hunt</div><div class="deal-store">Steam</div><div class="deal-prices"><span class="deal-sale">$7.99</span><span class="deal-original">$39.99</span><span class="deal-badge">-80%</span></div></div>
-    </div>
+    @for (d of featured; track d.dealID) {
+      <a class="deal-card fade-in" [href]="dealUrl(d.dealID)" target="_blank" rel="noopener">
+        <div class="wishlist-btn" title="Add to wishlist"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c6af7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <img class="deal-thumb" [src]="d.thumb" [alt]="d.title" loading="lazy">
+        <div class="deal-info">
+          <div class="deal-title">{{ d.title }}</div>
+          <div class="deal-store">{{ storeName(d.storeID) }}</div>
+          <div class="deal-prices">
+            <span class="deal-sale">${{ d.salePrice }}</span>
+            @if (d.salePrice !== d.normalPrice) {
+              <span class="deal-original">${{ d.normalPrice }}</span>
+            }
+            @if (+d.savings > 0) {
+              <span class="deal-badge">-{{ (+d.savings).toFixed(0) }}%</span>
+            }
+          </div>
+        </div>
+      </a>
+    }
   </div>
 </div>
 
@@ -60,26 +59,25 @@
 <div class="section fade-in">
   <div class="section-header"><h2>Top Picks Today</h2><a routerLink="/deals">Browse more &rarr;</a></div>
   <div class="deals-grid">
-    <div class="deal-card fade-in">
-      <div class="wishlist-btn" title="Add to wishlist"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c6af7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-      <img class="deal-thumb" src="https://cdn.akamai.steamstatic.com/steam/apps/1086940/header.jpg" alt="Baldur's Gate 3">
-      <div class="deal-info"><div class="deal-title">Baldur's Gate 3</div><div class="deal-store">Steam</div><div class="deal-prices"><span class="deal-sale">$44.99</span><span class="deal-original">$59.99</span><span class="deal-badge">-25%</span></div></div>
-    </div>
-    <div class="deal-card fade-in">
-      <div class="wishlist-btn" title="Add to wishlist"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c6af7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-      <img class="deal-thumb" src="https://cdn.akamai.steamstatic.com/steam/apps/1151640/header.jpg" alt="Horizon Zero Dawn">
-      <div class="deal-info"><div class="deal-title">Horizon Zero Dawn</div><div class="deal-store">Steam</div><div class="deal-prices"><span class="deal-sale">$9.99</span><span class="deal-original">$49.99</span><span class="deal-badge">-80%</span></div></div>
-    </div>
-    <div class="deal-card fade-in">
-      <div class="wishlist-btn" title="Add to wishlist"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c6af7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-      <img class="deal-thumb" src="https://cdn.akamai.steamstatic.com/steam/apps/374320/header.jpg" alt="Dark Souls III">
-      <div class="deal-info"><div class="deal-title">Dark Souls III</div><div class="deal-store">Steam</div><div class="deal-prices"><span class="deal-sale">$9.99</span><span class="deal-original">$39.99</span><span class="deal-badge">-75%</span></div></div>
-    </div>
-    <div class="deal-card fade-in">
-      <div class="wishlist-btn" title="Add to wishlist"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c6af7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-      <img class="deal-thumb" src="https://cdn.akamai.steamstatic.com/steam/apps/1145350/header.jpg" alt="Hades II">
-      <div class="deal-info"><div class="deal-title">Hades II</div><div class="deal-store">Epic Games</div><div class="deal-prices"><span class="deal-sale">$20.99</span><span class="deal-original">$29.99</span><span class="deal-badge">-30%</span></div></div>
-    </div>
+    @for (d of topPicks; track d.dealID) {
+      <a class="deal-card fade-in" [href]="dealUrl(d.dealID)" target="_blank" rel="noopener">
+        <div class="wishlist-btn" title="Add to wishlist"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c6af7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <img class="deal-thumb" [src]="d.thumb" [alt]="d.title" loading="lazy">
+        <div class="deal-info">
+          <div class="deal-title">{{ d.title }}</div>
+          <div class="deal-store">{{ storeName(d.storeID) }}</div>
+          <div class="deal-prices">
+            <span class="deal-sale">${{ d.salePrice }}</span>
+            @if (d.salePrice !== d.normalPrice) {
+              <span class="deal-original">${{ d.normalPrice }}</span>
+            }
+            @if (+d.savings > 0) {
+              <span class="deal-badge">-{{ (+d.savings).toFixed(0) }}%</span>
+            }
+          </div>
+        </div>
+      </a>
+    }
   </div>
 </div>
 
