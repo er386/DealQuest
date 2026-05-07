@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, OnInit, ElementRef, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -13,9 +13,9 @@ import { CheapSharkService, Deal } from '../../services/cheapshark.service';
 })
 export class Home implements OnInit, AfterViewInit {
   searchQuery = '';
-  featured: Deal[] = [];
-  topPicks: Deal[] = [];
-  storeMap: Record<string, string> = {};
+  featured = signal<Deal[]>([]);
+  topPicks = signal<Deal[]>([]);
+  storeMap = signal<Record<string, string>>({});
 
   constructor(
     private el: ElementRef,
@@ -24,11 +24,11 @@ export class Home implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    this.cheapshark.getStoreMap().subscribe(m => this.storeMap = m);
+    this.cheapshark.getStoreMap().subscribe(m => this.storeMap.set(m));
     this.cheapshark.getDeals({ sortBy: 'Deal Rating', desc: 1, pageSize: 4 })
-      .subscribe(d => this.featured = d);
+      .subscribe(d => this.featured.set(d));
     this.cheapshark.getDeals({ sortBy: 'Savings', desc: 1, pageSize: 4, onSale: 1 })
-      .subscribe(d => this.topPicks = d);
+      .subscribe(d => this.topPicks.set(d));
   }
 
   ngAfterViewInit() {
@@ -81,7 +81,7 @@ export class Home implements OnInit, AfterViewInit {
     this.router.navigate(['/deals'], { queryParams: q ? { q } : {} });
   }
 
-  storeName(id: string): string { return this.storeMap[id] || `Store ${id}`; }
+  storeName(id: string): string { return this.storeMap()[id] || `Store ${id}`; }
 
   dealUrl(dealID: string): string {
     return `https://www.cheapshark.com/redirect?dealID=${dealID}`;

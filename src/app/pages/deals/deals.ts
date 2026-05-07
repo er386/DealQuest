@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -22,30 +22,30 @@ export class Deals implements OnInit {
   sortLabel: SortLabel = 'Best Deal';
   storeFilter = '';
 
-  deals: Deal[] = [];
-  storeMap: Record<string, string> = {};
-  loading = false;
-  error = '';
+  deals = signal<Deal[]>([]);
+  storeMap = signal<Record<string, string>>({});
+  loading = signal(false);
+  error = signal('');
 
   private search$ = new Subject<void>();
 
   constructor(private cheapshark: CheapSharkService, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.cheapshark.getStoreMap().subscribe(m => this.storeMap = m);
+    this.cheapshark.getStoreMap().subscribe(m => this.storeMap.set(m));
 
     this.search$
       .pipe(
         debounceTime(350),
         switchMap(() => {
-          this.loading = true;
-          this.error = '';
+          this.loading.set(true);
+          this.error.set('');
           return this.cheapshark.getDeals(this.buildQuery());
         })
       )
       .subscribe({
-        next: (deals: Deal[]) => { this.deals = deals; this.loading = false; },
-        error: () => { this.error = 'Could not load deals. Try again.'; this.loading = false; }
+        next: (deals: Deal[]) => { this.deals.set(deals); this.loading.set(false); },
+        error: () => { this.error.set('Could not load deals. Try again.'); this.loading.set(false); }
       });
 
     this.searchTerm = this.route.snapshot.queryParamMap.get('q') ?? '';
@@ -65,7 +65,7 @@ export class Deals implements OnInit {
 
   setFilter(f: PriceFilter) { this.activeFilter = f; this.fetchNow(); }
 
-  storeName(id: string): string { return this.storeMap[id] || `Store ${id}`; }
+  storeName(id: string): string { return this.storeMap()[id] || `Store ${id}`; }
 
   dealUrl(dealID: string): string {
     return `https://www.cheapshark.com/redirect?dealID=${dealID}`;
@@ -79,11 +79,11 @@ export class Deals implements OnInit {
   }
 
   private fetchNow() {
-    this.loading = true;
-    this.error = '';
+    this.loading.set(true);
+    this.error.set('');
     this.cheapshark.getDeals(this.buildQuery()).subscribe({
-      next: (deals: Deal[]) => { this.deals = deals; this.loading = false; },
-      error: () => { this.error = 'Could not load deals. Try again.'; this.loading = false; }
+      next: (deals: Deal[]) => { this.deals.set(deals); this.loading.set(false); },
+      error: () => { this.error.set('Could not load deals. Try again.'); this.loading.set(false); }
     });
   }
 
