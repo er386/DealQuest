@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
+import { WishlistService } from './wishlist.service';
 
 const API = '/api/auth';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private wishlist: WishlistService) {}
 
   register(username: string, email: string, password: string) {
     return this.http.post<{ token: string; username: string }>(`${API}/register`, { username, email, password }).pipe(
@@ -23,6 +24,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
+    this.wishlist.clear();
   }
 
   isLoggedIn(): boolean {

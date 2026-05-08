@@ -1,9 +1,22 @@
 const mongoose = require('mongoose');
 
+const wishlistItemSchema = new mongoose.Schema({
+  gameID:      { type: String, required: true },
+  dealID:      String,
+  title:       String,
+  thumb:       String,
+  storeID:     String,
+  salePrice:   String,
+  normalPrice: String,
+  targetPrice: Number,
+  savedAt:     { type: Date, default: Date.now },
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true, trim: true },
   email:    { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true },
+  wishlist: { type: [wishlistItemSchema], default: [] },
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

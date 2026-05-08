@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Navbar } from '../../components/navbar/navbar';
 import { CheapSharkService, Deal } from '../../services/cheapshark.service';
+import { AuthService } from '../../services/auth.service';
+import { WishlistService } from '../../services/wishlist.service';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +23,8 @@ export class Home implements OnInit, AfterViewInit {
     private el: ElementRef,
     private cheapshark: CheapSharkService,
     private router: Router,
+    public auth: AuthService,
+    public wishlist: WishlistService,
   ) {}
 
   ngOnInit() {
@@ -29,6 +33,35 @@ export class Home implements OnInit, AfterViewInit {
       .subscribe(d => this.featured.set(d));
     this.cheapshark.getDeals({ sortBy: 'Savings', desc: 1, pageSize: 4, onSale: 1 })
       .subscribe(d => this.topPicks.set(d));
+    if (this.auth.isLoggedIn()) {
+      this.wishlist.load().subscribe({ error: () => {} });
+    }
+  }
+
+  isSaved(gameID: string): boolean {
+    return this.wishlist.has(gameID);
+  }
+
+  toggleWishlist(deal: Deal, event: Event) {
+    event.stopPropagation();
+    event.preventDefault();
+    if (!this.auth.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    if (this.wishlist.has(deal.gameID)) {
+      this.wishlist.remove(deal.gameID).subscribe();
+    } else {
+      this.wishlist.add({
+        gameID: deal.gameID,
+        dealID: deal.dealID,
+        title: deal.title,
+        thumb: deal.thumb,
+        storeID: deal.storeID,
+        salePrice: deal.salePrice,
+        normalPrice: deal.normalPrice,
+      }).subscribe();
+    }
   }
 
   ngAfterViewInit() {

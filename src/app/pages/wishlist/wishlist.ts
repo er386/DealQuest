@@ -1,45 +1,72 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, OnInit, computed, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { Navbar } from '../../components/navbar/navbar';
-
-interface WishlistItem {
-  id: number;
-  title: string;
-  store: string;
-  thumb: string;
-  price: number;
-  original: number;
-  discount: string;
-  target: number;
-}
+import { AuthService } from '../../services/auth.service';
+import { CheapSharkService } from '../../services/cheapshark.service';
+import { WishlistService, WishlistItem } from '../../services/wishlist.service';
 
 @Component({
   selector: 'app-wishlist',
-  imports: [RouterLink, FormsModule, Navbar],
+  imports: [RouterLink, FormsModule, CommonModule, Navbar],
   templateUrl: './wishlist.html',
   styleUrl: './wishlist.css',
 })
-export class Wishlist {
-  items: WishlistItem[] = [
-    { id: 1, title: "The Witcher 3: Wild Hunt", store: "Steam", thumb: "https://cdn.akamai.steamstatic.com/steam/apps/292030/header.jpg", price: 7.99, original: 39.99, discount: "-80%", target: 10.00 },
-    { id: 2, title: "Horizon Zero Dawn", store: "Steam", thumb: "https://cdn.akamai.steamstatic.com/steam/apps/1151640/header.jpg", price: 9.99, original: 49.99, discount: "-80%", target: 12.00 },
-    { id: 3, title: "Cyberpunk 2077", store: "Steam", thumb: "https://cdn.akamai.steamstatic.com/steam/apps/1091500/header.jpg", price: 14.99, original: 59.99, discount: "-75%", target: 9.99 },
-    { id: 4, title: "Elden Ring", store: "GOG", thumb: "https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg", price: 29.99, original: 59.99, discount: "-50%", target: 19.99 },
-    { id: 5, title: "Baldur's Gate 3", store: "Steam", thumb: "https://cdn.akamai.steamstatic.com/steam/apps/1086940/header.jpg", price: 44.99, original: 59.99, discount: "-25%", target: 29.99 },
-    { id: 6, title: "Red Dead Redemption 2", store: "Epic Games", thumb: "https://cdn.akamai.steamstatic.com/steam/apps/1174180/header.jpg", price: 19.99, original: 59.99, discount: "-67%", target: 14.99 },
-  ];
+export class Wishlist implements OnInit {
+  items = signal<WishlistItem[]>([]);
+  storeMap = signal<Record<string, string>>({});
+  loading = signal(false);
+  error = signal('');
 
-  isDealMet(item: WishlistItem): boolean { return item.price <= item.target; }
+  constructor(
+    public auth: AuthService,
+    private wishlist: WishlistService,
+    private cheapshark: CheapSharkService,
+    private router: Router,
+  ) {}
 
-  get totalGames() { return this.items.length; }
-  get dealsMet() { return this.items.filter(i => this.isDealMet(i)).length; }
-
-  remove(item: WishlistItem) {
-    this.items = this.items.filter(i => i.id !== item.id);
+  ngOnInit() {
+    if (!this.auth.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.cheapshark.getStoreMap().subscribe(m => this.storeMap.set(m));
+    this.loading.set(true);
+    this.wishlist.load(true).subscribe({
+      next: list => { this.items.set(list); this.loading.set(false); },
+      error: () => { this.error.set('Failed to load wishlist.'); this.loading.set(false); }
+    });
   }
 
-  aboveDiff(item: WishlistItem): string {
-    return '$' + (item.price - item.target).toFixed(2) + ' above target';
+  totalGames = computed(() => this.items().length);
+  totalSavings = computed(() => {
+    return this.items().reduce((sum, i) => {
+      const sale = parseFloat(i.salePrice || '0');
+      const normal = parseFloat(i.normalPrice || '0');
+      return sum + Math.max(0, normal - sale);
+    }, 0);
+  });
+
+  storeName(id?: string): string {
+    if (!id) return '';
+    return this.storeMap()[id] || `Store ${id}`;
+  }
+
+  savings(item: WishlistItem): number {
+    const sale = parseFloat(item.salePrice || '0');
+    const normal = parseFloat(item.normalPrice || '0');
+    if (normal <= 0) return 0;
+    return Math.round(((normal - sale) / normal) * 100);
+  }
+
+  remove(item: WishlistItem) {
+    this.wishlist.remove(item.gameID).subscribe({
+      next: () => this.items.update(list => list.filter(i => i.gameID !== item.gameID)),
+    });
+  }
+
+  dealUrl(dealID?: string): string {
+    return dealID ? `https://www.cheapshark.com/redirect?dealID=${dealID}` : '#';
   }
 }

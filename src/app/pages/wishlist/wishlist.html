@@ -8,50 +8,49 @@
     </div>
   </div>
   <div class="wishlist-stats">
-    <div class="wl-stat"><span class="wl-stat-num">{{ totalGames }}</span><span class="wl-stat-label">Games saved</span></div>
-    <div class="wl-stat"><span class="wl-stat-num" style="color:var(--success)">{{ dealsMet }}</span><span class="wl-stat-label">Deals met</span></div>
-    <div class="wl-stat"><span class="wl-stat-num">$162.94</span><span class="wl-stat-label">Total savings</span></div>
+    <div class="wl-stat"><span class="wl-stat-num">{{ totalGames() }}</span><span class="wl-stat-label">Games saved</span></div>
+    <div class="wl-stat"><span class="wl-stat-num" style="color:var(--success)">${{ totalSavings().toFixed(2) }}</span><span class="wl-stat-label">Total savings</span></div>
   </div>
 </div>
 
 <div class="main">
-  @for (item of items; track item.id) {
-    <div class="wishlist-item" [class.deal-met]="isDealMet(item)">
-      <img class="item-thumb" [src]="item.thumb" [alt]="item.title">
-      <div class="item-info">
-        <div class="item-title">{{ item.title }}</div>
-        <div class="item-store">{{ item.store }}</div>
-      </div>
-      <div class="item-prices">
-        <span class="current-price">${{ item.price.toFixed(2) }}</span>
-        <span class="original-price">${{ item.original.toFixed(2) }}</span>
-        <span class="discount-badge">{{ item.discount }}</span>
-      </div>
-      <div class="item-target">
-        <span class="target-label">Target Price</span>
-        <div class="target-input-wrap">
-          <span>$</span>
-          <input class="target-input" type="number" [(ngModel)]="item.target" min="0" step="0.01"/>
+  @if (loading()) {
+    <div class="empty-state"><p>Loading your wishlist...</p></div>
+  } @else if (error()) {
+    <div class="empty-state"><p>{{ error() }}</p></div>
+  } @else {
+    @for (item of items(); track item.gameID) {
+      <div class="wishlist-item">
+        <img class="item-thumb" [src]="item.thumb" [alt]="item.title">
+        <div class="item-info">
+          <div class="item-title">
+            <a [href]="dealUrl(item.dealID)" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">{{ item.title }}</a>
+          </div>
+          <div class="item-store">{{ storeName(item.storeID) }}</div>
         </div>
-        @if (isDealMet(item)) {
-          <div class="deal-met-badge">Target met!</div>
-        } @else {
-          <span class="above-target">{{ aboveDiff(item) }}</span>
-        }
+        <div class="item-prices">
+          <span class="current-price">${{ item.salePrice }}</span>
+          @if (item.salePrice !== item.normalPrice) {
+            <span class="original-price">${{ item.normalPrice }}</span>
+          }
+          @if (savings(item) > 0) {
+            <span class="discount-badge">-{{ savings(item) }}%</span>
+          }
+        </div>
+        <button class="remove-btn" (click)="remove(item)" title="Remove">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
       </div>
-      <button class="remove-btn" (click)="remove(item)" title="Remove">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-      </button>
-    </div>
-  }
+    }
 
-  @if (items.length === 0) {
-    <div class="empty-state">
-      <div class="empty-icon">🎮</div>
-      <h2>Your wishlist is empty</h2>
-      <p>Save games you want and set target prices to track when deals hit.</p>
-      <a routerLink="/deals" class="btn btn-primary" style="padding:12px 28px;font-size:15px;">Browse Deals</a>
-    </div>
+    @if (items().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">🎮</div>
+        <h2>Your wishlist is empty</h2>
+        <p>Save games you want and we'll keep track of the best price across all stores.</p>
+        <a routerLink="/deals" class="btn btn-primary" style="padding:12px 28px;font-size:15px;">Browse Deals</a>
+      </div>
+    }
   }
 </div>
 

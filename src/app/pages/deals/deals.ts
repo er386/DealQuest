@@ -1,10 +1,12 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Subject, debounceTime, switchMap } from 'rxjs';
 import { Navbar } from '../../components/navbar/navbar';
 import { CheapSharkService, Deal, DealQuery } from '../../services/cheapshark.service';
+import { AuthService } from '../../services/auth.service';
+import { WishlistService } from '../../services/wishlist.service';
 
 type PriceFilter = 'All' | 'Under $5' | 'Under $15' | 'Free';
 type SortLabel = 'Best Deal' | 'Lowest Price' | 'Highest Discount' | 'Recent' | 'Metacritic Score';
@@ -29,10 +31,19 @@ export class Deals implements OnInit {
 
   private search$ = new Subject<void>();
 
-  constructor(private cheapshark: CheapSharkService, private route: ActivatedRoute) {}
+  constructor(
+    private cheapshark: CheapSharkService,
+    private route: ActivatedRoute,
+    private router: Router,
+    public auth: AuthService,
+    public wishlist: WishlistService,
+  ) {}
 
   ngOnInit() {
     this.cheapshark.getStoreMap().subscribe(m => this.storeMap.set(m));
+    if (this.auth.isLoggedIn()) {
+      this.wishlist.load().subscribe({ error: () => {} });
+    }
 
     this.search$
       .pipe(
@@ -71,11 +82,30 @@ export class Deals implements OnInit {
     return `https://www.cheapshark.com/redirect?dealID=${dealID}`;
   }
 
-  toggleWishlist(event: Event) {
+  isSaved(gameID: string): boolean {
+    return this.wishlist.has(gameID);
+  }
+
+  toggleWishlist(deal: Deal, event: Event) {
     event.stopPropagation();
     event.preventDefault();
-    const btn = (event.currentTarget as HTMLElement);
-    btn.classList.toggle('saved');
+    if (!this.auth.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    if (this.wishlist.has(deal.gameID)) {
+      this.wishlist.remove(deal.gameID).subscribe();
+    } else {
+      this.wishlist.add({
+        gameID: deal.gameID,
+        dealID: deal.dealID,
+        title: deal.title,
+        thumb: deal.thumb,
+        storeID: deal.storeID,
+        salePrice: deal.salePrice,
+        normalPrice: deal.normalPrice,
+      }).subscribe();
+    }
   }
 
   private fetchNow() {
