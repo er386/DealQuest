@@ -47,11 +47,10 @@
               <span>$</span>
               <input
                 class="target-input"
-                type="number"
-                step="0.01"
-                min="0"
+                type="text"
+                inputmode="decimal"
                 [ngModel]="targetInput()"
-                (ngModelChange)="targetInput.set($event)"
+                (ngModelChange)="targetInput.set($event ?? '')"
                 (keydown.enter)="saveTarget(item)"
                 (keydown.escape)="cancelEdit()"
                 placeholder="0.00"
