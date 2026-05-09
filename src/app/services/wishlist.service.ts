@@ -63,6 +63,14 @@ export class WishlistService {
     );
   }
 
+  setTarget(gameID: string, targetPrice: number | null): Observable<WishlistItem> {
+    return this.http.patch<WishlistItem>(`${API}/${gameID}`, { targetPrice }, { headers: this.headers() }).pipe(
+      tap(updated => this.items.update(list =>
+        list.map(i => i.gameID === gameID ? { ...i, ...updated } : i)
+      ))
+    );
+  }
+
   clear() {
     this.items.set([]);
     this.loaded.set(false);
