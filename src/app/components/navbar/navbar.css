@@ -22,7 +22,43 @@ nav {
 .nav-links { display: flex; align-items: center; gap: 4px; }
 .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: 7px; transition: color 0.15s, background 0.15s; }
 .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--surface2); }
+.user-menu { position: relative; margin-left: 8px; }
+.user-chip {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface2); color: var(--text);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 4px 12px 4px 4px; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: background 0.15s, border-color 0.15s;
+}
+.user-chip:hover { background: var(--surface); border-color: var(--accent); }
+.user-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+}
+.user-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-caret { color: var(--muted); font-size: 11px; }
+.user-dropdown {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  min-width: 180px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 6px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+  display: flex; flex-direction: column; gap: 2px;
+  animation: dropFade 0.12s ease both;
+}
+@keyframes dropFade { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.user-dropdown a, .user-dropdown button {
+  background: transparent; border: 0; color: var(--text);
+  text-align: left; font: inherit; font-size: 14px;
+  padding: 8px 12px; border-radius: 6px; cursor: pointer;
+  text-decoration: none;
+}
+.user-dropdown a:hover, .user-dropdown button:hover { background: var(--surface2); color: var(--accent); }
+
 @media (max-width: 600px) {
   nav { padding: 0 20px; }
   .nav-links a:not(.btn-primary):not(.btn-ghost) { display: none; }
+  .user-name { display: none; }
 }

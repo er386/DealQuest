@@ -4,7 +4,24 @@
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a>
     <a routerLink="/deals" routerLinkActive="active">Deals</a>
     <a routerLink="/wishlist" routerLinkActive="active">Wishlist</a>
-    <a routerLink="/login" class="btn btn-ghost" style="margin-left:8px">Sign In</a>
-    <a routerLink="/register" class="btn btn-primary" style="margin-left:6px">Sign Up</a>
+
+    @if (auth.isLoggedIn()) {
+      <div class="user-menu" (click)="$event.stopPropagation()">
+        <button type="button" class="user-chip" (click)="toggleMenu($event)">
+          <span class="user-avatar">{{ auth.username()!.charAt(0).toUpperCase() }}</span>
+          <span class="user-name">{{ auth.username() }}</span>
+          <span class="user-caret">▾</span>
+        </button>
+        @if (menuOpen()) {
+          <div class="user-dropdown">
+            <a routerLink="/wishlist" (click)="closeMenu()">My Wishlist</a>
+            <button type="button" (click)="logout()">Sign Out</button>
+          </div>
+        }
+      </div>
+    } @else {
+      <a routerLink="/login" class="btn btn-ghost" style="margin-left:8px">Sign In</a>
+      <a routerLink="/register" class="btn btn-primary" style="margin-left:6px">Sign Up</a>
+    }
   </div>
 </nav>
