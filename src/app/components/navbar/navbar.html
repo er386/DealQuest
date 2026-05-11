@@ -10,6 +10,9 @@
         <button type="button" class="user-chip" (click)="toggleMenu($event)">
           <span class="user-avatar">{{ auth.username()!.charAt(0).toUpperCase() }}</span>
           <span class="user-name">{{ auth.username() }}</span>
+          @if (auth.isAdmin()) {
+            <span class="admin-badge">Admin</span>
+          }
           <span class="user-caret">▾</span>
         </button>
         @if (menuOpen()) {

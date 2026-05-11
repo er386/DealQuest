@@ -38,6 +38,11 @@ nav {
   font-size: 13px; font-weight: 700;
 }
 .user-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-badge {
+  background: var(--accent); color: #fff;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  padding: 2px 7px; border-radius: 999px; text-transform: uppercase;
+}
 .user-caret { color: var(--muted); font-size: 11px; }
 .user-dropdown {
   position: absolute; top: calc(100% + 6px); right: 0;
