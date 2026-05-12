@@ -1,0 +1,94 @@
+<app-navbar></app-navbar>
+
+<main class="main">
+  <header class="page-header">
+    <h1>Account &amp; <span>Security</span></h1>
+    <p class="sub">Signed in as <strong>{{ auth.username() }}</strong></p>
+  </header>
+
+  <section class="card">
+    <div class="card-head">
+      <div>
+        <h2>Two-factor authentication</h2>
+        <p class="muted">Add an extra layer of security using an authenticator app like Google Authenticator, Authy, or 1Password.</p>
+      </div>
+      @if (mfaEnabled() === true) {
+        <span class="status-on">Enabled</span>
+      } @else if (mfaEnabled() === false) {
+        <span class="status-off">Not enabled</span>
+      }
+    </div>
+
+    @if (loading()) {
+      <div class="muted">Loading...</div>
+    }
+
+    @if (error()) {
+      <div class="error">{{ error() }}</div>
+    }
+
+    @if (mode() === 'idle' && mfaEnabled() === false) {
+      <button class="btn-primary" [disabled]="submitting()" (click)="beginEnroll()">
+        {{ submitting() ? 'Starting...' : 'Enable two-factor authentication' }}
+      </button>
+    }
+
+    @if (mode() === 'idle' && mfaEnabled() === true) {
+      <button class="btn-danger" (click)="beginDisable()">Disable two-factor authentication</button>
+    }
+
+    @if (mode() === 'enrolling' && setup(); as s) {
+      <div class="enroll">
+        <ol class="steps">
+          <li>
+            <strong>Scan this QR code</strong> with your authenticator app.
+            <div class="qr-wrap">
+              <img [src]="s.qrDataUrl" alt="MFA QR code" class="qr" />
+            </div>
+            <button class="link-btn" (click)="toggleSecret()">
+              {{ showSecret() ? 'Hide' : 'Show' }} setup key (manual entry)
+            </button>
+            @if (showSecret()) {
+              <code class="secret">{{ s.secret }}</code>
+            }
+          </li>
+          <li>
+            <strong>Enter the 6-digit code</strong> from your app to confirm.
+            <div class="code-row">
+              <input
+                type="text"
+                inputmode="numeric"
+                maxlength="6"
+                placeholder="123456"
+                [(ngModel)]="code"
+                (keyup.enter)="confirmEnroll()" />
+              <button class="btn-primary" [disabled]="submitting()" (click)="confirmEnroll()">
+                {{ submitting() ? 'Verifying...' : 'Verify and enable' }}
+              </button>
+              <button class="btn-ghost" (click)="cancelEnroll()">Cancel</button>
+            </div>
+          </li>
+        </ol>
+      </div>
+    }
+
+    @if (mode() === 'disabling') {
+      <div class="enroll">
+        <p>Enter a current 6-digit code from your authenticator to confirm.</p>
+        <div class="code-row">
+          <input
+            type="text"
+            inputmode="numeric"
+            maxlength="6"
+            placeholder="123456"
+            [(ngModel)]="code"
+            (keyup.enter)="confirmDisable()" />
+          <button class="btn-danger" [disabled]="submitting()" (click)="confirmDisable()">
+            {{ submitting() ? 'Disabling...' : 'Disable' }}
+          </button>
+          <button class="btn-ghost" (click)="cancelDisable()">Cancel</button>
+        </div>
+      </div>
+    }
+  </section>
+</main>

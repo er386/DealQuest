@@ -18,6 +18,7 @@
         @if (menuOpen()) {
           <div class="user-dropdown">
             <a routerLink="/wishlist" (click)="closeMenu()">My Wishlist</a>
+            <a routerLink="/account" (click)="closeMenu()">Account &amp; Security</a>
             <button type="button" (click)="logout()">Sign Out</button>
           </div>
         }

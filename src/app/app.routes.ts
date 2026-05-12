@@ -5,6 +5,7 @@ import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
 import { Wishlist } from './pages/wishlist/wishlist';
 import { Game } from './pages/game/game';
+import { Account } from './pages/account/account';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -13,5 +14,6 @@ export const routes: Routes = [
   { path: 'register', component: Register },
   { path: 'wishlist', component: Wishlist },
   { path: 'games/:gameID', component: Game },
+  { path: 'account', component: Account },
   { path: '**', redirectTo: '' }
 ];

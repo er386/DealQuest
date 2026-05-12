@@ -17,6 +17,8 @@ const userSchema = new mongoose.Schema({
   email:    { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true },
   role:     { type: String, enum: ['user', 'admin'], default: 'user' },
+  mfaEnabled: { type: Boolean, default: false },
+  mfaSecret:  { type: String, default: null, select: false },
   wishlist: { type: [wishlistItemSchema], default: [] },
 }, { timestamps: true });
 

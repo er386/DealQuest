@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Navbar } from '../../components/navbar/navbar';
@@ -19,6 +19,11 @@ export class Login {
   serverError = '';
   loading = false;
 
+  step = signal<'credentials' | 'mfa'>('credentials');
+  mfaToken = '';
+  mfaCode = '';
+  mfaError = false;
+
   constructor(private auth: AuthService, private router: Router) {}
 
   togglePw() { this.showPassword = !this.showPassword; }
@@ -31,11 +36,47 @@ export class Login {
 
     this.loading = true;
     this.auth.login(this.email, this.password).subscribe({
-      next: () => this.router.navigate(['/']),
+      next: (result) => {
+        this.loading = false;
+        if (result.kind === 'mfa') {
+          this.mfaToken = result.mfaToken;
+          this.mfaCode = '';
+          this.mfaError = false;
+          this.step.set('mfa');
+        } else {
+          this.router.navigate(['/']);
+        }
+      },
       error: (err) => {
         this.loading = false;
         this.serverError = err.error?.message || 'Something went wrong. Please try again.';
       }
     });
+  }
+
+  submitMfa() {
+    this.serverError = '';
+    const code = this.mfaCode.trim();
+    this.mfaError = !/^\d{6}$/.test(code);
+    if (this.mfaError) return;
+
+    this.loading = true;
+    this.auth.verifyMfaLogin(this.mfaToken, code).subscribe({
+      next: () => this.router.navigate(['/']),
+      error: (err) => {
+        this.loading = false;
+        this.mfaError = true;
+        this.serverError = err.error?.message || 'Invalid code. Try again.';
+      }
+    });
+  }
+
+  cancelMfa() {
+    this.step.set('credentials');
+    this.mfaToken = '';
+    this.mfaCode = '';
+    this.mfaError = false;
+    this.serverError = '';
+    this.password = '';
   }
 }
