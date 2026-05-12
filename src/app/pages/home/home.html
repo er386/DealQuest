@@ -32,7 +32,7 @@
   <div class="section-header"><h2>Featured Deals</h2><a routerLink="/deals">View all &rarr;</a></div>
   <div class="deals-grid">
     @for (d of featured(); track d.dealID) {
-      <a class="deal-card" [href]="dealUrl(d.dealID)" target="_blank" rel="noopener">
+      <a class="deal-card" [routerLink]="['/games', d.gameID]">
         <div class="wishlist-btn" [class.saved]="isSaved(d.gameID)" (click)="toggleWishlist(d, $event)" [title]="isSaved(d.gameID) ? 'Remove from wishlist' : 'Add to wishlist'"><svg width="14" height="14" viewBox="0 0 24 24" [attr.fill]="isSaved(d.gameID) ? '#7c6af7' : 'none'" stroke="#7c6af7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
         <img class="deal-thumb" [src]="d.thumb" [alt]="d.title" loading="lazy">
         <div class="deal-info">
@@ -60,7 +60,7 @@
   <div class="section-header"><h2>Top Picks Today</h2><a routerLink="/deals">Browse more &rarr;</a></div>
   <div class="deals-grid">
     @for (d of topPicks(); track d.dealID) {
-      <a class="deal-card" [href]="dealUrl(d.dealID)" target="_blank" rel="noopener">
+      <a class="deal-card" [routerLink]="['/games', d.gameID]">
         <div class="wishlist-btn" [class.saved]="isSaved(d.gameID)" (click)="toggleWishlist(d, $event)" [title]="isSaved(d.gameID) ? 'Remove from wishlist' : 'Add to wishlist'"><svg width="14" height="14" viewBox="0 0 24 24" [attr.fill]="isSaved(d.gameID) ? '#7c6af7' : 'none'" stroke="#7c6af7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
         <img class="deal-thumb" [src]="d.thumb" [alt]="d.title" loading="lazy">
         <div class="deal-info">

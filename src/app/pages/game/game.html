@@ -1,0 +1,109 @@
+<app-navbar></app-navbar>
+
+<main class="main">
+  <a routerLink="/deals" class="back-link">← Back to deals</a>
+
+  @if (loading()) {
+    <div class="loading">Loading game...</div>
+  }
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (game(); as g) {
+    <section class="game-header">
+      <img [src]="g.info.thumb" [alt]="g.info.title" class="game-thumb" />
+      <div class="game-meta">
+        <h1>{{ g.info.title }}</h1>
+        @if (g.cheapestPriceEver) {
+          <div class="cheapest-ever">
+            Cheapest ever: <strong>${{ g.cheapestPriceEver.price }}</strong>
+          </div>
+        }
+        <div class="header-actions">
+          <button class="wishlist-btn" [class.saved]="isSaved()" (click)="toggleWishlist()">
+            {{ isSaved() ? '♥ In wishlist' : '♡ Add to wishlist' }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="deals-section">
+      <h2>Current deals</h2>
+      @if (!g.deals.length) {
+        <p class="muted">No deals available right now.</p>
+      } @else {
+        <ul class="deal-list">
+          @for (deal of g.deals; track deal.dealID) {
+            <li class="deal-row">
+              <span class="store">{{ storeName(deal.storeID) }}</span>
+              <span class="price">${{ deal.price }}</span>
+              @if (savingsPct(deal) > 0) {
+                <span class="discount">-{{ savingsPct(deal) }}%</span>
+              }
+              <span class="retail">${{ deal.retailPrice }}</span>
+              <a [href]="dealUrl(deal.dealID)" target="_blank" rel="noopener" class="get-btn">Get deal →</a>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+
+  <section class="comments-section">
+    <h2>Comments ({{ comments().length }})</h2>
+
+    @if (auth.isLoggedIn()) {
+      <form class="comment-form" (ngSubmit)="submitComment()">
+        <textarea
+          [(ngModel)]="newComment"
+          name="newComment"
+          placeholder="Share your thoughts on this game..."
+          maxlength="1000"
+          rows="3"
+          [disabled]="posting()"></textarea>
+        <div class="form-row">
+          <span class="char-count">{{ newComment.length }}/1000</span>
+          <button type="submit" class="post-btn" [disabled]="posting() || !newComment.trim()">
+            {{ posting() ? 'Posting...' : 'Post comment' }}
+          </button>
+        </div>
+      </form>
+    } @else {
+      <div class="login-prompt">
+        <a routerLink="/login">Sign in</a> to leave a comment.
+      </div>
+    }
+
+    @if (commentError()) {
+      <div class="error">{{ commentError() }}</div>
+    }
+
+    @if (loadingComments()) {
+      <div class="loading">Loading comments...</div>
+    } @else if (!comments().length) {
+      <p class="muted">No comments yet. Be the first to post.</p>
+    } @else {
+      <ul class="comment-list">
+        @for (c of comments(); track c._id) {
+          <li class="comment">
+            <div class="comment-head">
+              <span class="comment-user">{{ c.username }}</span>
+              <span class="comment-time">{{ timeAgo(c.createdAt) }}</span>
+              @if (canDelete(c)) {
+                <button
+                  class="delete-btn"
+                  (click)="deleteComment(c)"
+                  [disabled]="deletingId() === c._id"
+                  [title]="auth.isAdmin() && c.username !== auth.getUsername() ? 'Delete as admin' : 'Delete'">
+                  {{ deletingId() === c._id ? '...' : '✕' }}
+                </button>
+              }
+            </div>
+            <p class="comment-body">{{ c.body }}</p>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</main>

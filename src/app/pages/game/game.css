@@ -1,0 +1,66 @@
+:host { display: flex; flex-direction: column; min-height: 100vh; }
+
+.main { flex: 1; max-width: 1000px; width: 100%; margin: 0 auto; padding: 32px 40px; animation: fadeUp 0.5s 0.1s ease both; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.back-link { display: inline-block; color: var(--muted); text-decoration: none; margin-bottom: 24px; font-size: 13px; transition: color 0.15s; }
+.back-link:hover { color: var(--accent); }
+
+.loading { color: var(--muted); padding: 32px 0; text-align: center; }
+.error { color: #f87171; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25); padding: 10px 14px; border-radius: 8px; margin: 12px 0; font-size: 13px; }
+.muted { color: var(--muted); font-size: 14px; }
+
+.game-header { display: flex; gap: 24px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 32px; }
+.game-thumb { width: 180px; height: 100px; object-fit: cover; border-radius: 10px; background: var(--surface2); flex-shrink: 0; }
+.game-meta { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.game-meta h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+.cheapest-ever { font-size: 13px; color: var(--muted); }
+.cheapest-ever strong { color: var(--accent); }
+.header-actions { margin-top: auto; }
+.wishlist-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.wishlist-btn:hover { border-color: var(--accent); }
+.wishlist-btn.saved { background: var(--accent-dim); color: var(--accent); border-color: rgba(124,106,247,0.4); }
+
+.deals-section, .comments-section { margin-bottom: 32px; }
+.deals-section h2, .comments-section h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+
+.deal-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.deal-row { display: grid; grid-template-columns: 1fr auto auto auto auto; gap: 14px; align-items: center; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+.deal-row .store { font-weight: 600; font-size: 14px; }
+.deal-row .price { font-weight: 800; color: var(--accent); font-size: 16px; }
+.deal-row .retail { color: var(--faint); text-decoration: line-through; font-size: 12px; }
+.deal-row .discount { background: var(--accent-dim); color: var(--accent); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 5px; border: 1px solid rgba(124,106,247,0.2); }
+.get-btn { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 600; padding: 6px 12px; border: 1px solid rgba(124,106,247,0.3); border-radius: 7px; transition: background 0.15s; }
+.get-btn:hover { background: var(--accent-dim); }
+
+.comment-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.comment-form textarea { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: inherit; font-size: 14px; resize: vertical; outline: none; transition: border-color 0.15s; }
+.comment-form textarea:focus { border-color: var(--accent); }
+.form-row { display: flex; justify-content: space-between; align-items: center; }
+.char-count { font-size: 11px; color: var(--faint); }
+.post-btn { background: var(--accent); color: white; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
+.post-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.post-btn:not(:disabled):hover { opacity: 0.9; }
+
+.login-prompt { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.login-prompt a { color: var(--accent); text-decoration: none; font-weight: 600; }
+.login-prompt a:hover { text-decoration: underline; }
+
+.comment-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.comment { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+.comment-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.comment-user { font-weight: 700; font-size: 13px; }
+.comment-time { color: var(--faint); font-size: 11px; }
+.delete-btn { margin-left: auto; background: transparent; border: 1px solid var(--border); color: var(--faint); width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.delete-btn:hover:not(:disabled) { background: rgba(248,113,113,0.1); color: #f87171; border-color: rgba(248,113,113,0.3); }
+.delete-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.comment-body { font-size: 14px; color: var(--text); white-space: pre-wrap; word-wrap: break-word; }
+
+@media (max-width: 700px) {
+  .main { padding: 20px 16px; }
+  .game-header { flex-direction: column; }
+  .game-thumb { width: 100%; height: 160px; }
+  .deal-row { grid-template-columns: 1fr auto; gap: 8px; }
+  .deal-row .retail, .deal-row .discount { grid-column: 1; }
+  .get-btn { grid-column: 1 / -1; text-align: center; }
+}

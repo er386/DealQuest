@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Subject, debounceTime, switchMap } from 'rxjs';
@@ -13,7 +13,7 @@ type SortLabel = 'Best Deal' | 'Lowest Price' | 'Highest Discount' | 'Recent' | 
 
 @Component({
   selector: 'app-deals',
-  imports: [FormsModule, CommonModule, Navbar],
+  imports: [FormsModule, CommonModule, Navbar, RouterLink],
   templateUrl: './deals.html',
   styleUrl: './deals.css',
 })

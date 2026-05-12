@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const connectDB = require('./db');
 const authRoutes = require('./routes/auth');
 const wishlistRoutes = require('./routes/wishlist');
+const commentsRoutes = require('./routes/comments');
 
 const app = express();
 
@@ -16,6 +17,7 @@ connectDB();
 
 app.use('/api/auth', authRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/comments', commentsRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'DealQuest API is running' });
