@@ -1,0 +1,56 @@
+<app-navbar></app-navbar>
+
+<main class="main">
+  <header class="chat-header">
+    <h1>Game Recommender</h1>
+    <p class="muted">Tell the assistant about your taste and platforms. It will suggest games you can then search on the <a routerLink="/deals">Deals page</a>.</p>
+  </header>
+
+  @if (messages().length === 0) {
+    <section class="suggestions">
+      <h3>Try one of these</h3>
+      <div class="chip-row">
+        <button class="chip" (click)="suggest('I love cozy puzzle games on Switch. What should I try?')">Cozy puzzles on Switch</button>
+        <button class="chip" (click)="suggest('Looking for co-op shooters under $20 on Steam.')">Co-op shooters on Steam</button>
+        <button class="chip" (click)="suggest('Recommend story-driven RPGs I can finish in under 30 hours on PlayStation.')">Short RPGs on PlayStation</button>
+        <button class="chip" (click)="suggest('I enjoyed Hades and Dead Cells. What is similar?')">Like Hades & Dead Cells</button>
+      </div>
+    </section>
+  }
+
+  <section class="thread" #thread>
+    @for (m of messages(); track $index) {
+      <div class="msg" [class.from-user]="m.role === 'user'" [class.from-bot]="m.role === 'assistant'">
+        <div class="avatar">{{ m.role === 'user' ? 'You' : 'AI' }}</div>
+        <div class="bubble">{{ m.content }}</div>
+      </div>
+    }
+    @if (pending()) {
+      <div class="msg from-bot">
+        <div class="avatar">AI</div>
+        <div class="bubble typing"><span></span><span></span><span></span></div>
+      </div>
+    }
+  </section>
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  <form class="composer" (ngSubmit)="send()">
+    <textarea
+      [(ngModel)]="draft"
+      name="draft"
+      placeholder="What kind of game are you in the mood for?"
+      rows="2"
+      maxlength="2000"
+      [disabled]="pending()"
+      (keydown.enter)="$event.preventDefault(); send()"></textarea>
+    <div class="composer-row">
+      <button type="button" class="ghost" (click)="reset()" [disabled]="pending() || !messages().length">New chat</button>
+      <button type="submit" class="primary" [disabled]="pending() || !draft.trim()">
+        {{ pending() ? 'Thinking...' : 'Send' }}
+      </button>
+    </div>
+  </form>
+</main>

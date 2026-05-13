@@ -108,7 +108,7 @@ export class Game implements OnInit {
   steamAppLink(deal: GameDeal): string | null {
     if (deal.storeID !== '1') return null;
     const appid = this.game()?.info.steamAppID;
-    return appid ? `steam://store/${appid}` : null;
+    return appid ? `steam://run/${appid}` : null;
   }
 
   cheapestDeal = computed(() => {
