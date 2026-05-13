@@ -1,19 +1,18 @@
-import { Component, signal, ViewChild, ElementRef, AfterViewChecked, AfterViewInit } from '@angular/core';
+import { Component, signal, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { Navbar } from '../../components/navbar/navbar';
 import { ChatService } from '../../services/chat.service';
 
 @Component({
-  selector: 'app-chat',
-  imports: [CommonModule, FormsModule, RouterLink, Navbar],
-  templateUrl: './chat.html',
-  styleUrl: './chat.css',
+  selector: 'app-chat-widget',
+  imports: [CommonModule, FormsModule],
+  templateUrl: './chat-widget.html',
+  styleUrl: './chat-widget.css',
 })
-export class Chat implements AfterViewChecked, AfterViewInit {
+export class ChatWidget implements AfterViewChecked {
   @ViewChild('thread') threadRef?: ElementRef<HTMLDivElement>;
 
+  open = signal(false);
   pending = signal(false);
   error = signal('');
   draft = '';
@@ -25,17 +24,21 @@ export class Chat implements AfterViewChecked, AfterViewInit {
     return this.chat.messages;
   }
 
-  ngAfterViewInit() {
-    // Scroll to bottom on first paint when reopening the tab with existing history
-    this.shouldScroll = true;
-  }
-
   ngAfterViewChecked() {
     if (this.shouldScroll && this.threadRef) {
       const el = this.threadRef.nativeElement;
       el.scrollTop = el.scrollHeight;
       this.shouldScroll = false;
     }
+  }
+
+  toggle() {
+    this.open.update(v => !v);
+    if (this.open()) this.shouldScroll = true;
+  }
+
+  close() {
+    this.open.set(false);
   }
 
   send() {
