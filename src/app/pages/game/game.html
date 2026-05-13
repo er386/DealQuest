@@ -42,6 +42,9 @@
                 <span class="discount">-{{ savingsPct(deal) }}%</span>
               }
               <span class="retail">${{ deal.retailPrice }}</span>
+              @if (steamAppLink(deal); as link) {
+                <a [href]="link" class="launch-btn" title="Open in Steam app">▶ Steam</a>
+              }
               <a [href]="dealUrl(deal.dealID)" target="_blank" rel="noopener" class="get-btn">Get deal →</a>
             </li>
           }
