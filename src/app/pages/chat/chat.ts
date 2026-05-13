@@ -1,9 +1,9 @@
-import { Component, signal, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, signal, ViewChild, ElementRef, AfterViewChecked, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Navbar } from '../../components/navbar/navbar';
-import { ChatService, ChatMessage } from '../../services/chat.service';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
   selector: 'app-chat',
@@ -11,16 +11,24 @@ import { ChatService, ChatMessage } from '../../services/chat.service';
   templateUrl: './chat.html',
   styleUrl: './chat.css',
 })
-export class Chat implements AfterViewChecked {
+export class Chat implements AfterViewChecked, AfterViewInit {
   @ViewChild('thread') threadRef?: ElementRef<HTMLDivElement>;
 
-  messages = signal<ChatMessage[]>([]);
   pending = signal(false);
   error = signal('');
   draft = '';
   private shouldScroll = false;
 
-  constructor(private chat: ChatService) {}
+  constructor(public chat: ChatService) {}
+
+  get messages() {
+    return this.chat.messages;
+  }
+
+  ngAfterViewInit() {
+    // Scroll to bottom on first paint when reopening the tab with existing history
+    this.shouldScroll = true;
+  }
 
   ngAfterViewChecked() {
     if (this.shouldScroll && this.threadRef) {
@@ -34,16 +42,15 @@ export class Chat implements AfterViewChecked {
     const text = this.draft.trim();
     if (!text || this.pending()) return;
 
-    const next: ChatMessage[] = [...this.messages(), { role: 'user', content: text }];
-    this.messages.set(next);
+    this.chat.append({ role: 'user', content: text });
     this.draft = '';
     this.pending.set(true);
     this.error.set('');
     this.shouldScroll = true;
 
-    this.chat.send(next).subscribe({
+    this.chat.send(this.messages()).subscribe({
       next: r => {
-        this.messages.update(list => [...list, { role: 'assistant', content: r.reply }]);
+        this.chat.append({ role: 'assistant', content: r.reply });
         this.pending.set(false);
         this.shouldScroll = true;
       },
@@ -55,7 +62,7 @@ export class Chat implements AfterViewChecked {
   }
 
   reset() {
-    this.messages.set([]);
+    this.chat.reset();
     this.error.set('');
   }
 
